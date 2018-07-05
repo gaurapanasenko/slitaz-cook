@@ -1,0 +1,27 @@
+# SliTaz package receipt.
+
+PACKAGE="xdiskusage"
+VERSION="1.51"
+CATEGORY="utilities"
+SHORT_DESC="Displays a graphic of your disk usage with du"
+MAINTAINER="gaura.panasenko@gmail.com"
+LICENSE="GPL2"
+WEB_SITE="http://xdiskusage.sourceforge.net/"
+TARBALL="$PACKAGE-$VERSION.tgz"
+WGET_URL="http://xdiskusage.sourceforge.net/$TARBALL"
+
+DEPENDS="fltk"
+BUILD_DEPENDS="fltk-dev"
+
+# Rules to configure and make the package.
+compile_rules()
+{
+	unset CONFIG_SITE
+	./configure --prefix=$install $CONFIGURE_ARGS && make && make install
+}
+
+# Rules to gen a SliTaz package suitable for Tazpkg.
+genpkg_rules()
+{
+	cp -a $install/* $fs
+}

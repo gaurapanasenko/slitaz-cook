@@ -1,2 +1,2 @@
 # slitaz-cook
-Some useful cooks for slitaz
+Some useful recepies for slitaz
