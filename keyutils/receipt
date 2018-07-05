@@ -1,0 +1,26 @@
+# SliTaz package receipt.
+
+PACKAGE="keyutils"
+VERSION="1.2"
+CATEGORY="misc"
+SHORT_DESC="Linux Key Management Utilities"
+MAINTAINER="gaura.panasenko@slitaz.org"
+LICENSE="GPL2"
+WEB_SITE="https://people.redhat.com/~dhowells/keyutils/"
+TARBALL="$PACKAGE-$VERSION.tar.bz2"
+WGET_URL="https://people.redhat.com/~dhowells/keyutils/$TARBALL"
+
+DEPENDS=""
+BUILD_DEPENDS="slitaz-toolchain"
+
+# Rules to configure and make the package.
+compile_rules()
+{
+	make && make install DESTDIR=$install
+}
+
+# Rules to gen a SliTaz package suitable for Tazpkg.
+genpkg_rules()
+{
+	cp -a $install/* $fs
+}

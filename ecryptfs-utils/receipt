@@ -1,0 +1,52 @@
+# SliTaz package receipt.
+
+PACKAGE="ecryptfs-utils"
+VERSION=89
+CATEGORY="security"
+SHORT_DESC="ecryptfs cryptographic filesystem (utilities)"
+MAINTAINER="gaura.panasenko@gmail.com"
+LICENSE="GPL2"
+WEB_SITE="https://github.com/dustinkirkland/ecryptfs-utils/"
+TARBALL="$PACKAGE-$VERSION.tar.gz"
+#WGET_URL="$TARBALL"
+WGET_URL="https://launchpad.net/$PACKAGE/trunk/$VERSION/+download/${PACKAGE}_$VERSION.orig.tar.gz"
+#WGET_URL="https://github.com/dustinkirkland/$PACKAGE/archive/$COMMIT.tar.gz"
+
+DEPENDS="keyutils nss busybox-pam sudo-pam lsof pam python"
+SUGGESTED="slim-pam"
+BUILD_DEPENDS="$DEPENDS pam-dev python-dev slitaz-toolchain automake autoconf libtool perl perl-xml-parser nss-dev openssl gettext-tools"
+
+# Rules to configure and make the package.
+compile_rules()
+{
+	./configure $CONFIGURE_ARGS --with-warnings && make && make install DESTDIR=$install
+}
+
+# Rules to gen a SliTaz package suitable for Tazpkg.
+genpkg_rules()
+{
+	cp -a $install/* $fs
+}
+
+PAM="auth	optional	pam_ecryptfs.so unwrap
+password	optional	pam_ecryptfs.so
+session	optional	pam_ecryptfs.so unwrap"
+
+#Post install/remove commands for Tazpkg.
+post_install()
+{
+    sudo chmod u+s /sbin/mount.ecryptfs_private
+    while read file; do
+        grep -qs ecryptfs "$file" || \
+            echo "$PAM" >> "$file"
+    done <<EOT
+$1/etc/pam.d/login
+$1/etc/pam.d/other
+$1/etc/pam.d/sudo
+EOT
+}
+
+post_remove()
+{
+    sed -i '/^.*ecryptfs.*$/d' "$1/etc/pam.d/login" "$1/etc/pam.d/other" "$1/etc/pam.d/sudo"
+}
